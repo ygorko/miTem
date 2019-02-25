@@ -1,2 +1,0 @@
-const mitem = require('../mitem');
-
