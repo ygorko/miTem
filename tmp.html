@@ -7,8 +7,8 @@
 </head>
 <body>
 <script type="application/javascript" >
-    var compiled = miTem.compile("Hello {{who|toUpperCase|concat('asd')}} ");
-    console.log(compiled({who: "world!", arr:["qw", "as"]}));
+    var compiled = miTem.compile("Hello {{who|default('asd')}} ");
+    console.log(compiled({}));
 </script>
 
 </body>

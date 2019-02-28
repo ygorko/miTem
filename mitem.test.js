@@ -1,7 +1,7 @@
 const mitem = require('./mitem');
 
 test("Set variable", function () {
-    var template = mitem.compile("hello {{who}}");
+    let template = mitem.compile("hello {{who}}");
     expect(template({who: "world!"})).toBe("hello world!");
     expect(template({who: "me"})).toBe("hello me");
 
@@ -11,7 +11,7 @@ test("Set variable", function () {
 });
 
 test("Set multiple variables", function () {
-    var template = mitem.compile("{{hi}} {{ who }}");
+    let template = mitem.compile("{{hi}} {{ who }}");
     expect(template({who: "me", hi:"hello"})).toBe("hello me");
 
     template = mitem.compile("{{who }} {{hi}} {{ who }}");
@@ -19,7 +19,7 @@ test("Set multiple variables", function () {
 });
 
 test("If statement", function () {
-    var template = mitem.compile("{% if condition %} test {% end %}");
+    let template = mitem.compile("{% if condition %} test {% end %}");
     expect(template({condition: false})).toBe("");
     expect(template({condition: true})).toBe(" test ");
 
@@ -34,7 +34,7 @@ test("If statement", function () {
 });
 
 test("If else statement", function () {
-    var template = mitem.compile("{% if cond %} test1 {% else %} test2 {% end %}");
+    let template = mitem.compile("{% if cond %} test1 {% else %} test2 {% end %}");
     expect(template({cond: true})).toBe(" test1 ");
     expect(template({cond: false})).toBe(" test2 ");
 
@@ -49,7 +49,32 @@ test("If else statement", function () {
 });
 
 test("Expression with statement", function () {
-    var template = mitem.compile("{{text}}");
+    let template = mitem.compile("{{text}}");
     expect(template({text: "{% if cond %} test1 {% else %} test2 {% end %}"}))
         .toBe("{% if cond %} test1 {% else %} test2 {% end %}");
 });
+
+test("Multiline template", function () {
+    let template = mitem.compile(`hello {{who}}
+hello {{who}}
+hello {{who}}
+hello {{who}}
+hello {{who}}
+`);
+    expect(template({who: "world!"})).toBe(`hello world!
+hello world!
+hello world!
+hello world!
+hello world!
+`);
+
+});
+
+test("Filter default", function () {
+    let template = mitem.compile("hello {{who|default('Value not set')}}");
+    expect(template({})).toBe("hello Value not set");
+
+    template = mitem.compile("hello {{who|default('Value not set')}}");
+    expect(template({who:"value"})).toBe("hello value");
+});
+
