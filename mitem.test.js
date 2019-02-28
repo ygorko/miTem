@@ -78,3 +78,36 @@ test("Filter default", function () {
     expect(template({who:"value"})).toBe("hello value");
 });
 
+test("String function as filter", function () {
+    let template = mitem.compile("hello {{who|repeat(2)}}");
+    expect(template({who:"value"})).toBe("hello valuevalue");
+});
+
+test("Array function as filter", function () {
+    let template = mitem.compile("hello {{who|join(',')}}");
+    expect(template({who:["qw", "er"]})).toBe("hello qw,er");
+});
+
+test("Several filters", function () {
+    let template = mitem.compile("hello {{who|join(',')|repeat(2)}}");
+    expect(template({who:["qw", "er"]})).toBe("hello qw,erqw,er");
+
+    template = mitem.compile("{{ arr | join(',') | toUpperCase }}")
+    expect(template({arr:["qw", "er"]})).toBe("QW,ER");
+});
+
+test("Filter is not exists", function () {
+    let outputData = "";
+    let storeLog = inputs => (outputData += inputs);
+    console["error"] = jest.fn(storeLog);
+
+    let template = mitem.compile("hello {{who|qwe}}");
+    expect(()=>{template({who:["qw", "er"]})}).toThrowError("c.who.qwe is not a function");
+    expect(outputData).toBe("Line: 1; Error in {{who|qwe}}");
+
+
+    outputData = "";
+    template = mitem.compile("hello {{who|qwe(5)}}");
+    expect(()=>{template({who:["qw", "er"]})}).toThrowError("c.who.qwe is not a function");
+    expect(outputData).toBe("Line: 1; Error in {{who|qwe(5)}}");
+});

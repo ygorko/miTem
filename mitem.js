@@ -26,15 +26,6 @@
     };
 
     miTem.filters = {
-        upper: function () {
-            return this.toUpperCase();
-        },
-        repeat: function (n) {
-            return this.repeat(n);
-        },
-        concat: function (prefix) {
-            return prefix + this;
-        },
         default: function (value) {
             return (typeof this === "undefined") ? value : this;
         }
@@ -57,24 +48,24 @@
         _globalScope.miTem = miTem;
     }
 
-    miTem.processFilters = function (expression) {
+    miTem.processFilters = expression => {
         let lexemes = expression.trim().split("|");
         let variable = "c." + lexemes[0];
-        let filters = lexemes.slice(1).reverse();
+        let filters = lexemes.slice(1);
         let filterRegexLexemes;
         for (const filter of filters) {
-            filterRegexLexemes = templateSettings.filter_param.exec(filter) || ["", filter, "", ""];
+            filterRegexLexemes = templateSettings.filter_param.exec(filter.trim()) || ["", filter.trim(), "", ""];
             let parameters = filterRegexLexemes[3].split(",");
-            variable = "s.m.filters['" + filterRegexLexemes[1] + "'].apply(" + variable + ",[" + parameters.toString() + "])";
+            let str = "(typeof s.m.filters['" + filterRegexLexemes[1] + "']!=='undefined')?";
+            str += "s.m.filters['" + filterRegexLexemes[1] + "'].apply(" + variable + ",[" + parameters.toString() + "]):";
+            str += variable + "." + filterRegexLexemes[1] + "(" + filterRegexLexemes[3] + ")";
+
+            variable = str;
         }
         return variable;
     };
 
-    miTem.compiledTemplate = function (tmpl) {
-        return
-    };
-
-    miTem.compile = function (tmpl) {
+    miTem.compile = tmpl => {
         let returnFunctionStr = "var c=d;var o='";
         let strings = tmpl.split("\n");
         let newLine = "";
@@ -86,7 +77,9 @@
             }).replace(templateSettings.expression, function () {
                 let key = arguments[1];
                 let calculatedValue = miTem.processFilters(key);
-                calculatedValue = "(function(){var s=this;s.m=m;try{return " + calculatedValue + "}catch(e){console.error(`Line: " + (parseInt(i) + 1) + "; Error in " + arguments[0] + "`)}})()";
+                calculatedValue = "(function(){var s=this;s.m=m;try{return " + calculatedValue +
+                    "}catch(e){console.error('Line: " + (parseInt(i) + 1) + "; Error in "
+                    + arguments[0].replace(/'/g, "\\'") + "');throw e;}})()";
                 return "'+" + calculatedValue + "+'";
             });
             newLine = "'+\"\\n\"+'";
@@ -94,10 +87,8 @@
 
         returnFunctionStr += "'; return o;";
         try {
-            
-            //return returnFunction;
-            
             return function (data) {
+                //console.log(returnFunctionStr);
                 let returnFunction = new Function("d", "m", returnFunctionStr);
                 //console.log(returnFunction(data, miTem));
                 return returnFunction(data, miTem);

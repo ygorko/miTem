@@ -7,8 +7,12 @@
 </head>
 <body>
 <script type="application/javascript" >
-    var compiled = miTem.compile("Hello {{who|default('asd')}} ");
-    console.log(compiled({}));
+    var compiled = miTem.compile("hello {{ arr | join(',') | toUpperCase }}");
+    try {
+        console.log(compiled({arr:["qw", "er"]}));
+    } catch (e) {
+        console.log(e.message)
+    }
 </script>
 
 </body>
