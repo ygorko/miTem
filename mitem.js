@@ -14,15 +14,31 @@
     };
 
     let statements = {
-        "if": function () {
-            return "if(c." + arguments[1] + "){";
-        },
-        "else": function () {
-            return "}else " + (arguments[1] == "if" ? statements.if("", arguments[2]) : "{");
-        },
-        "end": function () {
-            return "}"
+        "if":  (...args) => { return "if(c." + args[1] + "){"; },
+        "else": (...args) => { return "}else " + (args[1] == "if" ? statements.if("", args[2]) : "{"); },
+        "endif": () => { return "}" },
+        "endfor": () => { return "}c=c.loop.parent;" },
+        "for": (...args) => {
+            let code = "var t={loop:{parent:c,length:c." + args[3] + ".length}};c=t;var i=0;";
+            code += "if(typeof c.loop.parent." + args[3] + ".length === 'undefined')";
+            code += "{c.loop.length=m.objSize(c.loop.parent." + args[3] + ")}";
+            code += "for(" + args[1] + " in c.loop.parent." + args[3] + "){";
+            code += "if (!c.loop.parent." + args[3] + ".hasOwnProperty(" + args[1] + "))continue;";
+            code += "c." + args[1] + "=c.loop.parent." + args[3] + "[" + args[1] + "];";
+            code += "c.loop.last=(i===c.loop.length-1);";
+            code += "c.loop.first=(i===0);";
+            code += "c.loop.index0=i; c.loop.index=i+1;i++;";
+
+            return code;
         }
+    };
+
+    miTem.objSize = (obj) => {
+        let size = 0, key;
+        for (key in obj) {
+            if (obj.hasOwnProperty(key)) size++;
+        }
+        return size;
     };
 
     miTem.filters = {
@@ -77,7 +93,7 @@
             }).replace(templateSettings.expression, function () {
                 let key = arguments[1];
                 let calculatedValue = miTem.processFilters(key);
-                calculatedValue = "(function(){var s=this;s.m=m;try{return " + calculatedValue +
+                calculatedValue = "(function(){var s=this,t;s.m=m;try{return " + calculatedValue +
                     "}catch(e){console.error('Line: " + (parseInt(i) + 1) + "; Error in "
                     + arguments[0].replace(/'/g, "\\'") + "');throw e;}})()";
                 return "'+" + calculatedValue + "+'";
@@ -88,18 +104,23 @@
         returnFunctionStr += "'; return o;";
         try {
             return function (data) {
-                //console.log(returnFunctionStr);
-                let returnFunction = new Function("d", "m", returnFunctionStr);
-                //console.log(returnFunction(data, miTem));
-                return returnFunction(data, miTem);
+                //try {
+                    //console.log(returnFunctionStr);
+                    let returnFunction = new Function("d", "m", returnFunctionStr);
+                    //console.log(returnFunction(data, miTem));
+                    return returnFunction(data, miTem);
+                // } catch (e) {
+                //     console.error(returnFunctionStr);
+                //     console.error(e);
+                // }
             }
-        } catch (e) {
+        }
+        catch (e) {
             console.error(returnFunctionStr);
             console.error(e);
         }
     }
 })();
-
 
 
 
