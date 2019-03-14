@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <script src="mitem.js"></script>
+    <script src="mitem.min.js"></script>
 </head>
 <body>
 <script type="application/javascript" >
     var compiled = miTem.compile("hello {{ arr | join(',') | toUpperCase }}");
-    try {
+    //try {
         console.log(compiled({arr:["qw", "er"]}));
-    } catch (e) {
-        console.log(e.message)
-    }
+    // } catch (e) {
+    //     console.log(e.message)
+    // }
 </script>
 
 </body>

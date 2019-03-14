@@ -107,40 +107,46 @@ test("Filter is not exists", function () {
     let outputData = "";
     let storeLog = inputs => (outputData += inputs);
     console["error"] = jest.fn(storeLog);
+    mitem.settings.stopOnError = true;
 
     let template = mitem.compile("hello {{who|qwe}}");
     expect(()=>{template({who:["qw", "er"]})}).toThrowError("c.who.qwe is not a function");
     expect(outputData).toBe("Line: 1; Error in {{who|qwe}}");
 
-
     outputData = "";
     template = mitem.compile("hello {{who|qwe(5)}}");
     expect(()=>{template({who:["qw", "er"]})}).toThrowError("c.who.qwe is not a function");
     expect(outputData).toBe("Line: 1; Error in {{who|qwe(5)}}");
+
+    mitem.settings.stopOnError = false;
+    outputData = "";
+    template = mitem.compile("hello {{who|qwe(5)}} world");
+    expect(template({who:["qw", "er"]})).toBe("hello undefined world")
+    expect(outputData).toBe("Line: 1; Error in {{who|qwe(5)}}");
 });
 
-test("For statement (array)", function () {
+test("FOR statement (array)", function () {
     let template = mitem.compile("{% for item in arr %}test{% endfor %}");
     expect(template({arr: []})).toBe("");
     expect(template({arr: [1]})).toBe("test");
     expect(template({arr: [1,2]})).toBe("testtest");
 });
 
-test("For statement (object)", function () {
+test("FOR statement (object)", function () {
     let template = mitem.compile("{% for item in arr %}test{% endfor %}");
     expect(template({arr: {} })).toBe("");
     expect(template({arr: {a:1} })).toBe("test");
     expect(template({arr: {a:1,b:2} })).toBe("testtest");
 });
 
-test("For statement with variable", function () {
+test("FOR statement with variable", function () {
     let template = mitem.compile("{% for item in arr %}{{item.foo}}{% endfor %}");
     expect(template({arr: [] })).toBe("");
     expect(template({arr: [{foo:"test"}]})).toBe("test");
     expect(template({arr: [{foo:"test "}, {foo:"test2"}]})).toBe("test test2");
 });
 
-test("For statement loop index", function () {
+test("FOR statement loop index", function () {
     let template = mitem.compile("{% for item in arr %}{{loop.index}}{% endfor %}");
     expect(template({arr: [{foo:"test "}, {foo:"test2"}]})).toBe("12");
 
@@ -154,7 +160,7 @@ test("For statement loop index", function () {
     expect(template({arr: {x:{foo:"test "}, y:{foo:"test2"}}})).toBe("01");
 });
 
-test("For statement loop length", function () {
+test("FOR statement loop length", function () {
     let template = mitem.compile("{% for item in arr %}{{loop.length}} {% endfor %}");
     expect(template({arr: [{foo:"test"}]})).toBe("1 ");
     expect(template({arr: [{foo:"test "}, {foo:"test2"}]})).toBe("2 2 ");
@@ -163,26 +169,26 @@ test("For statement loop length", function () {
     expect(template({arr: {a:{foo:"test "}, b:{foo:"test2"}}})).toBe("2 2 ");
 });
 
-test("For statement loop first element", function () {
+test("FOR statement loop first element", function () {
     let template = mitem.compile("{% for item in arr %}{% if loop.first %}first{%else%} not first{%endif%}{% endfor %}");
     expect(template({arr: [{foo: "test"}]})).toBe("first");
     expect(template({arr: [{foo: "test "}, {foo: "test2"}]})).toBe("first not first");
     expect(template({arr: [1,2,3]})).toBe("first not first not first");
 });
 
-test("For statement loop last element", function () {
+test("FOR statement loop last element", function () {
     let template = mitem.compile("{% for item in arr %}{% if loop.last %}last{%else%}not last {%endif%}{% endfor %}");
     expect(template({arr: [{foo: "test"}]})).toBe("last");
     expect(template({arr: [{foo: "test "}, {foo: "test2"}]})).toBe("not last last");
     expect(template({arr: [1,2,3]})).toBe("not last not last last");
 });
 
-test("For statement parent context", function () {
+test("FOR statement parent context", function () {
     let template = mitem.compile("{% for item in arr %}{{item.foo}} {{loop.parent.bar}}{% endfor %}");
     expect(template({arr: [{foo: "test"}], bar: "b"})).toBe("test b");
 });
 
-test("Nested for statement", function () {
+test("Nested FOR statement", function () {
     let template = mitem.compile(
         "{% for item in arr %}{{item.foo}} {{loop.parent.bar}} " +
         "{% for item2 in item.n_arr %}{{item2}} {{loop.parent.item.foo}} {% endfor %}" +

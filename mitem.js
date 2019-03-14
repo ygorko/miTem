@@ -1,30 +1,30 @@
 (function () {
     "use strict";
 
-    let _globalScope,
+    var _globalScope,
         miTem = {
             name: "miTem",
             version: "0.1",
         };
 
-    let templateSettings = {
+    var templateSettings = {
         statement: /\{\%([\s\S]+?)\%\}/g,
         expression: /\{\{([\s\S]+?)\}\}/g,
         filter_param: /([\s\S]+?)(\(([^)]+?)\))$/
     };
 
-    let statements = {
-        "if":  (...args) => { return "if(c." + args[1] + "){"; },
-        "else": (...args) => { return "}else " + (args[1] == "if" ? statements.if("", args[2]) : "{"); },
-        "endif": () => { return "}" },
-        "endfor": () => { return "}c=c.loop.parent;" },
-        "for": (...args) => {
-            let code = "var t={loop:{parent:c,length:c." + args[3] + ".length}};c=t;var i=0;";
-            code += "if(typeof c.loop.parent." + args[3] + ".length === 'undefined')";
-            code += "{c.loop.length=m.objSize(c.loop.parent." + args[3] + ")}";
-            code += "for(" + args[1] + " in c.loop.parent." + args[3] + "){";
-            code += "if (!c.loop.parent." + args[3] + ".hasOwnProperty(" + args[1] + "))continue;";
-            code += "c." + args[1] + "=c.loop.parent." + args[3] + "[" + args[1] + "];";
+    var statements = {
+        "if":  function() { return "if(c." + arguments[1] + "){"; },
+        "else": function() { return "}else " + (arguments[1] == "if" ? statements.if("", arguments[2]) : "{"); },
+        "endif": function() { return "}" },
+        "endfor": function() { return "}c=c.loop.parent;" },
+        "for": function() {
+            var code = "var t={loop:{parent:c,length:c." + arguments[3] + ".length}};c=t;var i=0;";
+            code += "if(typeof c.loop.parent." + arguments[3] + ".length === 'undefined')";
+            code += "{c.loop.length=m.objSize(c.loop.parent." + arguments[3] + ")}";
+            code += "for(" + arguments[1] + " in c.loop.parent." + arguments[3] + "){";
+            code += "if (!c.loop.parent." + arguments[3] + ".hasOwnProperty(" + arguments[1] + "))continue;";
+            code += "c." + arguments[1] + "=c.loop.parent." + arguments[3] + "[" + arguments[1] + "];";
             code += "c.loop.last=(i===c.loop.length-1);";
             code += "c.loop.first=(i===0);";
             code += "c.loop.index0=i; c.loop.index=i+1;i++;";
@@ -33,13 +33,21 @@
         }
     };
 
-    miTem.objSize = (obj) => {
-        let size = 0, key;
+    miTem.objSize = function(obj) {
+        var size = 0, key;
         for (key in obj) {
             if (obj.hasOwnProperty(key)) size++;
         }
         return size;
     };
+
+    miTem.retoreDefaultSettings = function () {
+        miTem.settings = {
+            stopOnError: false
+        }
+    };
+
+    miTem.retoreDefaultSettings();
 
     miTem.filters = {
         default: function (value) {
@@ -48,7 +56,6 @@
     };
 
     miTem.filters.prototype = String;
-
 
     _globalScope = (function () {
         return this || (0, eval)("this");
@@ -64,15 +71,15 @@
         _globalScope.miTem = miTem;
     }
 
-    miTem.processFilters = expression => {
-        let lexemes = expression.trim().split("|");
-        let variable = "c." + lexemes[0];
-        let filters = lexemes.slice(1);
-        let filterRegexLexemes;
-        for (const filter of filters) {
-            filterRegexLexemes = templateSettings.filter_param.exec(filter.trim()) || ["", filter.trim(), "", ""];
-            let parameters = filterRegexLexemes[3].split(",");
-            let str = "(typeof s.m.filters['" + filterRegexLexemes[1] + "']!=='undefined')?";
+    miTem.processFilters = function(expression) {
+        var lexemes = expression.trim().split("|");
+        var variable = "c." + lexemes[0];
+        var filters = lexemes.slice(1);
+        var filterRegexLexemes, i;
+        for (i in filters) {
+            filterRegexLexemes = templateSettings.filter_param.exec(filters[i].trim()) || ["", filters[i].trim(), "", ""];
+            var parameters = filterRegexLexemes[3].split(",");
+            var str = "(typeof s.m.filters['" + filterRegexLexemes[1] + "']!=='undefined')?";
             str += "s.m.filters['" + filterRegexLexemes[1] + "'].apply(" + variable + ",[" + parameters.toString() + "]):";
             str += variable + "." + filterRegexLexemes[1] + "(" + filterRegexLexemes[3] + ")";
 
@@ -81,21 +88,25 @@
         return variable;
     };
 
-    miTem.compile = tmpl => {
-        let returnFunctionStr = "var c=d;var o='";
-        let strings = tmpl.split("\n");
-        let newLine = "";
-        for (const [i, line] of strings.entries()) {
+    miTem.compile = function(tmpl) {
+        var returnFunctionStr = "var c=d;var m=this.miTem;var o='";
+        var strings = tmpl.split("\n");
+        var newLine = "", i, line;
+
+        for (i in strings) {
+            line = strings[i];
             returnFunctionStr += newLine;
             returnFunctionStr += line.replace(templateSettings.statement, function () {
-                let lexemes = arguments[1].trim().split(" ");
+                var lexemes = arguments[1].trim().split(" ");
                 return "';" + statements[lexemes[0]].apply(null, lexemes) + "o+='";
             }).replace(templateSettings.expression, function () {
-                let key = arguments[1];
-                let calculatedValue = miTem.processFilters(key);
+                var key = arguments[1];
+                var calculatedValue = miTem.processFilters(key);
                 calculatedValue = "(function(){var s=this,t;s.m=m;try{return " + calculatedValue +
                     "}catch(e){console.error('Line: " + (parseInt(i) + 1) + "; Error in "
-                    + arguments[0].replace(/'/g, "\\'") + "');throw e;}})()";
+                    + arguments[0].replace(/'/g, "\\'") + "');";
+                if (miTem.settings.stopOnError) calculatedValue += "throw e;";
+                calculatedValue += "}})()";
                 return "'+" + calculatedValue + "+'";
             });
             newLine = "'+\"\\n\"+'";
@@ -104,16 +115,12 @@
         returnFunctionStr += "'; return o;";
         try {
             return function (data) {
-                //try {
-                    //console.log(returnFunctionStr);
-                    let returnFunction = new Function("d", "m", returnFunctionStr);
-                    //console.log(returnFunction(data, miTem));
-                    return returnFunction(data, miTem);
-                // } catch (e) {
-                //     console.error(returnFunctionStr);
-                //     console.error(e);
-                // }
-            }
+                var returnFunction = new Function("d", returnFunctionStr);
+                var scope = {};
+                scope.miTem = miTem;
+                scope.scopeFilters = [];
+                return returnFunction.apply(scope, [data]);
+            };
         }
         catch (e) {
             console.error(returnFunctionStr);
