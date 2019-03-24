@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <script src="mitem.min.js"></script>
+    <script src="mitem.js"></script>
 </head>
 <body>
 <script type="application/javascript" >
-    var compiled = miTem.compile("hello {{ arr | join(',') | toUpperCase }}");
+    let partial = miTem.compile("hello {{who}}");
+    miTem.registerPartial("hello", partial);
+    let template = miTem.compile("{% partial hello item %} - {% partial hello %}");
     //try {
-        console.log(compiled({arr:["qw", "er"]}));
+        console.log(template({who: "test"}));
     // } catch (e) {
     //     console.log(e.message)
     // }

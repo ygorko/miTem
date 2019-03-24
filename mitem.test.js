@@ -25,7 +25,7 @@ test("Set multiple variables", function () {
     expect(template({who: "me", hi:"hello"})).toBe("me hello me");
 });
 
-test("If statement", function () {
+test("IF statement", function () {
     let template = mitem.compile("{% if condition %} test {% endif %}");
     expect(template({condition: false})).toBe("");
     expect(template({condition: true})).toBe(" test ");
@@ -40,7 +40,7 @@ test("If statement", function () {
     expect(template({cond2: true,cond1:false})).toBe(" test2 ");
 });
 
-test("If else statement", function () {
+test("IF ELSE statement", function () {
     let template = mitem.compile("{% if cond %} test1 {% else %} test2 {% endif %}");
     expect(template({cond: true})).toBe(" test1 ");
     expect(template({cond: false})).toBe(" test2 ");
@@ -194,4 +194,19 @@ test("Nested FOR statement", function () {
         "{% for item2 in item.n_arr %}{{item2}} {{loop.parent.item.foo}} {% endfor %}" +
         "{% endfor %}");
     expect(template({arr: [{foo: "test", n_arr:[4,6]}], bar: "b"})).toBe("test b 4 test 6 test ");
+});
+
+test("Partials", function () {
+    const mitem = require('./mitem');
+    let partial = mitem.compile("hello {{who}}");
+    mitem.registerPartial("hello", partial);
+    let template = mitem.compile("{% partial hello %} - {% partial hello %}");
+    expect(template({who: "test"})).toBe("hello test - hello test");
+
+    template = mitem.compile("" +
+        "{% for item in arr %}" +
+        "{% partial hello item %} " +
+        "{% endfor %}" +
+        "");
+    expect(template({arr:[{who: "test"},{who: "test2"}]})).toBe("hello test hello test2 ");
 });
