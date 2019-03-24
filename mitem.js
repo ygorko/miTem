@@ -140,7 +140,6 @@
             }
             let scope = {};
             scope.miTem = miTem;
-            scope.scopeFilters = [];
             return returnFunction.apply(scope, [data]);
         };
     }
