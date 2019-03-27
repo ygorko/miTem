@@ -210,3 +210,8 @@ test("Partials", function () {
         "");
     expect(template({arr:[{who: "test"},{who: "test2"}]})).toBe("hello test hello test2 ");
 });
+
+test("FOR thru undefined", function () {
+    let template = mitem.compile("{% for item in val %}111{% endfor %}");
+    expect(template({})).toBe("");
+});

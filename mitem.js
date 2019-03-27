@@ -37,7 +37,8 @@
             return "}c=c.loop.parent;"
         },
         "for": (...args) => {
-            let code = "var t={loop:{parent:c,length:c." + args[3] + ".length}};c=t;var i=0;";
+            let code = "if (typeof c." + args[3] + "=== 'undefined') return '';";
+            code += "var t={loop:{parent:c,length:c." + args[3] + ".length}};c=t;var i=0;";
             code += "if(typeof c.loop.parent." + args[3] + ".length === 'undefined')";
             code += "{c.loop.length=m.objSize(c.loop.parent." + args[3] + ")}";
             code += "for(" + args[1] + " in c.loop.parent." + args[3] + "){";
