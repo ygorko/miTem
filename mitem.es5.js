@@ -8,7 +8,7 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
     var _globalScope = void 0,
         miTem = {
         name: "miTem",
-        version: "0.1"
+        version: "1.0.3"
     };
 
     var templateSettings = {
@@ -147,13 +147,14 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
                     line = _step2$value[1];
 
                 returnFunctionStr += newLine;
-                returnFunctionStr += line.replace(templateSettings.statement, function () {
+                var currentLine = line.replace(/'/gi, "\\'");
+                returnFunctionStr += currentLine.replace(templateSettings.statement, function () {
                     var lexemes = arguments[1].trim().split(" ");
                     return "';" + statements[lexemes[0]].apply(null, lexemes) + "o+='";
                 }).replace(templateSettings.expression, function () {
                     var key = arguments[1];
-                    var calculatedValue = miTem.processFilters(key);
-                    calculatedValue = "(function(){var s=this,t;s.m=m;try{return " + calculatedValue + "}catch(e){console.error('Line: " + (parseInt(i) + 1) + "; Error in " + arguments[0].replace(/'/g, "\\'") + "');";
+                    var calculatedValue = miTem.processFilters(key.replace(/\\'/gi, "'"));
+                    calculatedValue = "(function(){var s=this,t;s.m=m;try{return " + calculatedValue + "}catch(e){console.error('Line: " + (parseInt(i) + 1) + "; Error in " + arguments[0] + "');";
                     if (miTem.settings.stopOnError) calculatedValue += "throw e;";
                     calculatedValue += "}})()";
                     return "'+" + calculatedValue + "+'";

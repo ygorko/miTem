@@ -4,7 +4,7 @@
     let _globalScope,
         miTem = {
             name: "miTem",
-            version: "0.1",
+            version: "1.0.3",
         };
 
     let templateSettings = {
@@ -112,15 +112,16 @@
         let newLine = "";
         for (const [i, line] of strings.entries()) {
             returnFunctionStr += newLine;
-            returnFunctionStr += line.replace(templateSettings.statement, function () {
+            let currentLine = line.replace(/'/gi,"\\'");
+            returnFunctionStr += currentLine.replace(templateSettings.statement, function () {
                 let lexemes = arguments[1].trim().split(" ");
                 return "';" + statements[lexemes[0]].apply(null, lexemes) + "o+='";
             }).replace(templateSettings.expression, function () {
                 let key = arguments[1];
-                let calculatedValue = miTem.processFilters(key);
+                let calculatedValue = miTem.processFilters(key.replace(/\\'/gi, "'"));
                 calculatedValue = "(function(){var s=this,t;s.m=m;try{return " + calculatedValue +
                     "}catch(e){console.error('Line: " + (parseInt(i) + 1) + "; Error in "
-                    + arguments[0].replace(/'/g, "\\'") + "');";
+                    + arguments[0] + "');";
                 if (miTem.settings.stopOnError) calculatedValue += "throw e;";
                 calculatedValue += "}})()";
                 return "'+" + calculatedValue + "+'";

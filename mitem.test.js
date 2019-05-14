@@ -210,3 +210,8 @@ test("Partials", function () {
         "");
     expect(template({arr:[{who: "test"},{who: "test2"}]})).toBe("hello test hello test2 ");
 });
+
+test("String with quotes", function () {
+    let template = mitem.compile("hello '{{who}}'");
+    expect(template({who: "world!"})).toBe("hello 'world!'");
+});
