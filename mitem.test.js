@@ -215,3 +215,31 @@ test("String with quotes", function () {
     let template = mitem.compile("hello '{{who}}'");
     expect(template({who: "world!"})).toBe("hello 'world!'");
 });
+
+test("Filter abs", function () {
+    let template = mitem.compile("hello '{{num|abs}}'");
+    expect(template({num: 5})).toBe("hello '5'");
+    expect(template({num: -5})).toBe("hello '5'");
+    expect(template({num: 0})).toBe("hello '0'");
+});
+
+test("Filter capitalize", function () {
+    let template = mitem.compile("hello '{{who|capitalize}}'");
+    expect(template({who: "test"})).toBe("hello 'Test'");
+    expect(template({who: "test test"})).toBe("hello 'Test test'");
+    expect(template({who: "test   test"})).toBe("hello 'Test   test'");
+    expect(template({who: ""})).toBe("hello ''");
+});
+
+test("Filter nl2br", function () {
+    let template = mitem.compile("hello '{{who|nl2br}}'");
+    expect(template({who: `test
+test`})).toBe("hello 'test<br />test'");
+    expect(template({who: "test\ntest"})).toBe("hello 'test<br />test'");
+});
+
+test("Filter title", function () {
+    let template = mitem.compile("hello '{{who|title}}'");
+    expect(template({who: "test"})).toBe("hello 'Test'");
+    expect(template({who: "test   test"})).toBe("hello 'Test   Test'");
+});

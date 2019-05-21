@@ -70,6 +70,18 @@
     miTem.filters = {
         default: function (value) {
             return (typeof this === "undefined") ? value : this;
+        },
+        abs: function () {
+            return Math.abs(this);
+        },
+        capitalize: function () {
+            return this.charAt(0).toUpperCase() + this.slice(1);
+        },
+        nl2br: function () {
+            return this.replace(/\n/gi, "<br />");
+        },
+        title: function () {
+            return this.split(" ").map((val) => val.charAt(0).toUpperCase() + val.slice(1).toLowerCase()).join(" ");
         }
     };
 

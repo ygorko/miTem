@@ -74,6 +74,20 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
     miTem.filters = {
         default: function _default(value) {
             return typeof this === "undefined" ? value : this;
+        },
+        abs: function abs() {
+            return Math.abs(this);
+        },
+        capitalize: function capitalize() {
+            return this.charAt(0).toUpperCase() + this.slice(1);
+        },
+        nl2br: function nl2br() {
+            return this.replace(/\n/gi, "<br />");
+        },
+        title: function title() {
+            return this.split(" ").map(function (val) {
+                return val.charAt(0).toUpperCase() + val.slice(1).toLowerCase();
+            }).join(" ");
         }
     };
 
