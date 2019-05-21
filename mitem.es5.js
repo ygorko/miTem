@@ -8,7 +8,7 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
     var _globalScope = void 0,
         miTem = {
         name: "miTem",
-        version: "1.0.3"
+        version: "1.0.4"
     };
 
     var templateSettings = {
