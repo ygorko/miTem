@@ -169,6 +169,11 @@ test("FOR statement loop length", function () {
     expect(template({arr: {a:{foo:"test "}, b:{foo:"test2"}}})).toBe("2 2 ");
 });
 
+test("FOR statement loop key", function () {
+    let template = mitem.compile("{% for item in arr %}{{loop.key}} {% endfor %}");
+    expect(template({arr: {a:1,b:2} })).toBe("a b ");
+});
+
 test("FOR statement loop first element", function () {
     let template = mitem.compile("{% for item in arr %}{% if loop.first %}first{%else%} not first{%endif%}{% endfor %}");
     expect(template({arr: [{foo: "test"}]})).toBe("first");

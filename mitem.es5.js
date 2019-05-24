@@ -48,6 +48,7 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
             code += "c." + (arguments.length <= 1 ? undefined : arguments[1]) + "=c.loop.parent." + (arguments.length <= 3 ? undefined : arguments[3]) + "[" + (arguments.length <= 1 ? undefined : arguments[1]) + "];";
             code += "c.loop.last=(i===c.loop.length-1);";
             code += "c.loop.first=(i===0);";
+            code += "c.loop.key=" + (arguments.length <= 1 ? undefined : arguments[1]) + ";";
             code += "c.loop.index0=i; c.loop.index=i+1;i++;";
 
             return code;

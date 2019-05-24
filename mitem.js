@@ -45,6 +45,7 @@
             code += "c." + args[1] + "=c.loop.parent." + args[3] + "[" + args[1] + "];";
             code += "c.loop.last=(i===c.loop.length-1);";
             code += "c.loop.first=(i===0);";
+            code += "c.loop.key=" + args[1] + ";";
             code += "c.loop.index0=i; c.loop.index=i+1;i++;";
 
             return code;
