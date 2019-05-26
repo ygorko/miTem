@@ -41,3 +41,4 @@ web:
 var template = miTem.compile("{% for item in arr %}{{item.foo}}{% endfor %}");
 template({arr: [{foo:"test "}, {foo:"test2"}]})
 ```
+More examples can be found [here](https://ygorko.github.io/mitem/)
