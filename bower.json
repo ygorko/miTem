@@ -1,0 +1,21 @@
+{
+  "name": "mitem",
+  "version": "1.0.0",
+  "description": "Minimalistic template engine",
+  "main": "mitem.js",
+  "authors": [
+    "Ihor Yermolaiev <ygorko@gmail.com>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "template",
+    "minimalistic",
+    "fast",
+    "small",
+    "templating"
+  ],
+  "ignore": [
+    "node_modules",
+    "bower_components"
+  ]
+}

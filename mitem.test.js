@@ -169,6 +169,11 @@ test("FOR statement loop length", function () {
     expect(template({arr: {a:{foo:"test "}, b:{foo:"test2"}}})).toBe("2 2 ");
 });
 
+test("FOR statement loop key", function () {
+    let template = mitem.compile("{% for item in arr %}{{loop.key}} {% endfor %}");
+    expect(template({arr: {a:1,b:2} })).toBe("a b ");
+});
+
 test("FOR statement loop first element", function () {
     let template = mitem.compile("{% for item in arr %}{% if loop.first %}first{%else%} not first{%endif%}{% endfor %}");
     expect(template({arr: [{foo: "test"}]})).toBe("first");
@@ -214,4 +219,37 @@ test("Partials", function () {
 test("FOR thru undefined", function () {
     let template = mitem.compile("{% for item in val %}111{% endfor %}");
     expect(template({})).toBe("");
+});
+
+test("String with quotes", function () {
+    let template = mitem.compile("hello '{{who}}'");
+    expect(template({who: "world!"})).toBe("hello 'world!'");
+});
+
+test("Filter abs", function () {
+    let template = mitem.compile("hello '{{num|abs}}'");
+    expect(template({num: 5})).toBe("hello '5'");
+    expect(template({num: -5})).toBe("hello '5'");
+    expect(template({num: 0})).toBe("hello '0'");
+});
+
+test("Filter capitalize", function () {
+    let template = mitem.compile("hello '{{who|capitalize}}'");
+    expect(template({who: "test"})).toBe("hello 'Test'");
+    expect(template({who: "test test"})).toBe("hello 'Test test'");
+    expect(template({who: "test   test"})).toBe("hello 'Test   test'");
+    expect(template({who: ""})).toBe("hello ''");
+});
+
+test("Filter nl2br", function () {
+    let template = mitem.compile("hello '{{who|nl2br}}'");
+    expect(template({who: `test
+test`})).toBe("hello 'test<br />test'");
+    expect(template({who: "test\ntest"})).toBe("hello 'test<br />test'");
+});
+
+test("Filter title", function () {
+    let template = mitem.compile("hello '{{who|title}}'");
+    expect(template({who: "test"})).toBe("hello 'Test'");
+    expect(template({who: "test   test"})).toBe("hello 'Test   Test'");
 });

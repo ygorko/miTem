@@ -4,7 +4,7 @@
     let _globalScope,
         miTem = {
             name: "miTem",
-            version: "0.1",
+            version: "1.0.4",
         };
 
     let templateSettings = {
@@ -46,6 +46,7 @@
             code += "c." + args[1] + "=c.loop.parent." + args[3] + "[" + args[1] + "];";
             code += "c.loop.last=(i===c.loop.length-1);";
             code += "c.loop.first=(i===0);";
+            code += "c.loop.key=" + args[1] + ";";
             code += "c.loop.index0=i; c.loop.index=i+1;i++;";
 
             return code;
@@ -71,6 +72,18 @@
     miTem.filters = {
         default: function (value) {
             return (typeof this === "undefined") ? value : this;
+        },
+        abs: function () {
+            return Math.abs(this);
+        },
+        capitalize: function () {
+            return this.charAt(0).toUpperCase() + this.slice(1);
+        },
+        nl2br: function () {
+            return this.replace(/\n/gi, "<br />");
+        },
+        title: function () {
+            return this.split(" ").map((val) => val.charAt(0).toUpperCase() + val.slice(1).toLowerCase()).join(" ");
         }
     };
 
@@ -113,15 +126,16 @@
         let newLine = "";
         for (const [i, line] of strings.entries()) {
             returnFunctionStr += newLine;
-            returnFunctionStr += line.replace(templateSettings.statement, function () {
+            let currentLine = line.replace(/'/gi,"\\'");
+            returnFunctionStr += currentLine.replace(templateSettings.statement, function () {
                 let lexemes = arguments[1].trim().split(" ");
                 return "';" + statements[lexemes[0]].apply(null, lexemes) + "o+='";
             }).replace(templateSettings.expression, function () {
                 let key = arguments[1];
-                let calculatedValue = miTem.processFilters(key);
+                let calculatedValue = miTem.processFilters(key.replace(/\\'/gi, "'"));
                 calculatedValue = "(function(){var s=this,t;s.m=m;try{return " + calculatedValue +
                     "}catch(e){console.error('Line: " + (parseInt(i) + 1) + "; Error in "
-                    + arguments[0].replace(/'/g, "\\'") + "');";
+                    + arguments[0] + "');";
                 if (miTem.settings.stopOnError) calculatedValue += "throw e;";
                 calculatedValue += "}})()";
                 return "'+" + calculatedValue + "+'";
