@@ -14,7 +14,7 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
     var templateSettings = {
         statement: /\{\%([\s\S]+?)\%\}/g,
         expression: /\{\{([\s\S]+?)\}\}/g,
-        filter_param: /([\s\S]+?)(\(([^)]+?)\))$/
+        filter_param: /([\s\S]+?)(\(([^)]*)\))$/
     };
 
     miTem.partials = {};
@@ -40,7 +40,8 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
             return "}c=c.loop.parent;";
         },
         "for": function _for() {
-            var code = "var t={loop:{parent:c,length:c." + (arguments.length <= 3 ? undefined : arguments[3]) + ".length}};c=t;var i=0;";
+            var code = "if (typeof c." + (arguments.length <= 3 ? undefined : arguments[3]) + "=== 'undefined') return '';";
+            code += "var t={loop:{parent:c,length:c." + (arguments.length <= 3 ? undefined : arguments[3]) + ".length}};c=t;var i=0;";
             code += "if(typeof c.loop.parent." + (arguments.length <= 3 ? undefined : arguments[3]) + ".length === 'undefined')";
             code += "{c.loop.length=m.objSize(c.loop.parent." + (arguments.length <= 3 ? undefined : arguments[3]) + ")}";
             code += "for(" + (arguments.length <= 1 ? undefined : arguments[1]) + " in c.loop.parent." + (arguments.length <= 3 ? undefined : arguments[3]) + "){";
@@ -91,8 +92,6 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
             }).join(" ");
         }
     };
-
-    miTem.filters.prototype = String;
 
     _globalScope = function () {
         return this || (0, eval)("this");

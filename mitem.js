@@ -10,7 +10,7 @@
     let templateSettings = {
         statement: /\{\%([\s\S]+?)\%\}/g,
         expression: /\{\{([\s\S]+?)\}\}/g,
-        filter_param: /([\s\S]+?)(\(([^)]+?)\))$/
+        filter_param: /([\s\S]+?)(\(([^)]*)\))$/
     };
 
     miTem.partials = {};
@@ -86,8 +86,6 @@
             return this.split(" ").map((val) => val.charAt(0).toUpperCase() + val.slice(1).toLowerCase()).join(" ");
         }
     };
-
-    miTem.filters.prototype = String;
 
     _globalScope = (function () {
         return this || (0, eval)("this");
