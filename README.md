@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![npm](https://img.shields.io/npm/v/mitem.svg)](https://www.npmjs.org/package/mitem)
 
-miTem.js is small and fast template engine with [twig](twig.symfony.com) like syntax
+miTem.js is small and fast template engine with [twig](https://twig.symfony.com/) like syntax
 
 # Installation
 via yarn:
