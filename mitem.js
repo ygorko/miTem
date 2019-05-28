@@ -122,12 +122,18 @@
         let returnFunctionStr = "var c=d;var m=this.miTem;var o='";
         let strings = tmpl.split("\n");
         let newLine = "";
+        let compiled = true;
         for (const [i, line] of strings.entries()) {
             returnFunctionStr += newLine;
             let currentLine = line.replace(/'/gi,"\\'");
             returnFunctionStr += currentLine.replace(templateSettings.statement, function () {
                 let lexemes = arguments[1].trim().split(" ");
-                return "';" + statements[lexemes[0]].apply(null, lexemes) + "o+='";
+                let retStr = "';";
+                if (typeof statements[lexemes[0]] === 'undefined') {
+                    console.error("Line: " + i + "; Error in " + arguments[0] + "; Unknown tag '" + lexemes[0] + "'");
+                    compiled = false;
+                } else retStr += statements[lexemes[0]].apply(null, lexemes);
+                return retStr + "o+='";
             }).replace(templateSettings.expression, function () {
                 let key = arguments[1];
                 let calculatedValue = miTem.processFilters(key.replace(/\\'/gi, "'"));
@@ -143,18 +149,22 @@
 
         returnFunctionStr += "'; return o;";
 
-        return function (data) {
-            let returnFunction;
-            try {
-                returnFunction = new Function("d", returnFunctionStr);
-            } catch (e) {
-                console.error(returnFunctionStr);
-                console.error(e);
-            }
-            let scope = {};
-            scope.miTem = miTem;
-            return returnFunction.apply(scope, [data]);
-        };
+        if (compiled) {
+            return (data) => {
+                let returnFunction;
+                try {
+                    returnFunction = new Function("d", returnFunctionStr);
+                } catch (e) {
+                    console.error(returnFunctionStr);
+                    console.error(e);
+                }
+                let scope = {};
+                scope.miTem = miTem;
+                return returnFunction.apply(scope, [data]);
+            };
+        }
+        else return () => "";
+
     }
 })();
 

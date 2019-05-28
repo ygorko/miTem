@@ -105,7 +105,7 @@ test("Several filters", function () {
 
 test("Filter is not exists", function () {
     let outputData = "";
-    let storeLog = inputs => (outputData += inputs);
+    const storeLog = inputs => (outputData += inputs);
     console["error"] = jest.fn(storeLog);
     mitem.settings.stopOnError = true;
 
@@ -252,4 +252,14 @@ test("Filter title", function () {
     let template = mitem.compile("hello '{{who|title}}'");
     expect(template({who: "test"})).toBe("hello 'Test'");
     expect(template({who: "test   test"})).toBe("hello 'Test   Test'");
+});
+
+test("Unknown tag", function () {
+    let outputData = "";
+    const storeLog = inputs => (outputData += inputs);
+    console["error"] = jest.fn(storeLog);
+
+    let template = mitem.compile("\n\n\n{% iff cnd %} text {% endif %} qwe");
+    expect(template({})).toBe("");
+    expect(outputData).toBe("Line: 3; Error in {% iff cnd %}; Unknown tag 'iff'");
 });
