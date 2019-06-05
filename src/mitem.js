@@ -39,6 +39,28 @@
     },
   };
 
+  miTem.variable = function (val) {
+    this.val = val;
+  };
+
+  miTem.variable.prototype.applyFilter = function (filterName, filterParameters) {
+    let ret;
+    if (typeof miTem.filters[filterName] !== 'undefined') {
+      ret = miTem.filters[filterName].apply(this.val, filterParameters);
+    } else if (typeof this.val[filterName] === 'undefined') {
+      throw new Error(`Filter ${filterName} is not defined`);
+    } else {
+      // eslint-disable-next-line prefer-spread
+      ret = this.val[filterName].apply(this.val, filterParameters);
+    }
+    this.val = ret;
+    return this;
+  };
+
+  miTem.variable.prototype.toString = function () {
+    return this.val;
+  };
+
   miTem.objSize = (obj) => {
     const keys = Object.keys(obj);
     return keys.length;
@@ -78,19 +100,16 @@
 
   miTem.processFilters = (expression) => {
     const lexemes = expression.trim().split('|');
-    let variable = `c.${lexemes[0]}`;
+    let variable = `(new m.variable(c.${lexemes[0]}))`;
     const filters = lexemes.slice(1);
     let filterRegexLexemes;
 
     filters.forEach((filter) => {
       filterRegexLexemes = templateSettings.filter_param.exec(filter.trim()) || ['', filter.trim(), '', ''];
       const parameters = filterRegexLexemes[3].split(',');
-      const str = `(typeof s.m.filters['${filterRegexLexemes[1]}']!=='undefined')?
-      s.m.filters['${filterRegexLexemes[1]}'].apply(${variable},[${parameters.toString()}]):
-      ${variable}.${filterRegexLexemes[1]}(${filterRegexLexemes[3]})`;
-
-      variable = str;
+      variable += `.applyFilter('${filterRegexLexemes[1]}', [${parameters.join(',')}])`;
     });
+    variable += '.toString()';
 
     return variable;
   };
@@ -133,7 +152,6 @@
     });
 
     returnFunctionStr += "'; return o;";
-
     if (compiled) {
       return (data) => {
         let returnFunction;

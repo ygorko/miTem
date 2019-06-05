@@ -1,5 +1,5 @@
 /* eslint-disable */
-const mitem = require('./mitem');
+const mitem = require('../src/mitem');
 
 test("Set variable", function () {
   let template = mitem.compile("hello {{who}}");
@@ -113,20 +113,20 @@ test("Filter is not exists", function () {
   let template = mitem.compile("hello {{who|qwe}}");
   expect(() => {
     template({who: ["qw", "er"]})
-  }).toThrowError("c.who.qwe is not a function");
+  }).toThrowError("Filter qwe is not defined");
   expect(outputData).toBe("Line: 1; Error in {{who|qwe}}");
 
   outputData = "";
   template = mitem.compile("hello {{who|qwe(5)}}");
   expect(() => {
     template({who: ["qw", "er"]})
-  }).toThrowError("c.who.qwe is not a function");
+  }).toThrowError("Filter qwe is not defined");
   expect(outputData).toBe("Line: 1; Error in {{who|qwe(5)}}");
 
   mitem.settings.stopOnError = false;
   outputData = "";
   template = mitem.compile("hello {{who|qwe(5)}} world");
-  expect(template({who: ["qw", "er"]})).toBe("hello undefined world")
+  expect(template({who: ["qw", "er"]})).toBe("hello undefined world");
   expect(outputData).toBe("Line: 1; Error in {{who|qwe(5)}}");
 });
 
@@ -207,7 +207,6 @@ test("Nested FOR statement", function () {
 });
 
 test("Partials", function () {
-  const mitem = require('./mitem');
   let partial = mitem.compile("hello {{who}}");
   mitem.registerPartial("hello", partial);
   let template = mitem.compile("{% partial hello %} - {% partial hello %}");
@@ -270,3 +269,4 @@ test("Unknown tag", function () {
   expect(template({})).toBe("");
   expect(outputData).toBe("Line: 3; Error in {% iff cnd %}; Unknown tag 'iff'");
 });
+
