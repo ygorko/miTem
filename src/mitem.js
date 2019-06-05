@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+
 (function () {
   const miTem = {
     name: 'miTem',
@@ -86,16 +88,12 @@
     title() { return this.split(' ').map(val => val.charAt(0).toUpperCase() + val.slice(1).toLowerCase()).join(' '); },
   };
 
-  const globalScope = (function () {
-    return this || (0, eval)('this');
-  }());
-
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = miTem;
   } else if (typeof define === 'function' && define.amd) {
     define(() => miTem);
   } else {
-    globalScope.miTem = miTem;
+    window.miTem = miTem;
   }
 
   miTem.processFilters = (expression) => {

@@ -23,9 +23,9 @@
   },
   "scripts": {
     "test": "jest",
-    "build": "minify -o mitem.min.js mitem.js",
-    "babel": "babel --presets es2015 mitem.js -o mitem.es5.js; minify -o mitem.es5.min.js mitem.es5.js",
-    "lint": "eslint mitem.js"
+    "build": "minify -o ./dist/mitem.min.js ./src/mitem.js",
+    "babel": "babel --presets es2015 ./src/mitem.js -o mitem.es5.js; minify -o ./dist/mitem.es5.min.js mitem.es5.js; rm mitem.es5.js",
+    "lint": "eslint ./src/mitem.js"
   },
   "dependencies": {}
 }
