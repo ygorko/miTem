@@ -1,6 +1,6 @@
 # miTem
 
-[![CircleCI](https://circleci.com/gh/ygorko/miTem.svg?style=svg)](https://circleci.com/gh/ygorko/miTem)
+[![CircleCI](https://circleci.com/gh/ygorko/miTem.svg?style=shield)](https://circleci.com/gh/ygorko/miTem)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![npm](https://img.shields.io/npm/v/mitem.svg)](https://www.npmjs.org/package/mitem)
 
