@@ -1,6 +1,6 @@
 # miTem
 
-[![Build Status](https://travis-ci.org/ygorko/miTem.svg?branch=master)](https://travis-ci.org/ygorko/miTem)
+[![CircleCI](https://circleci.com/gh/ygorko/miTem.svg?style=svg)](https://circleci.com/gh/ygorko/miTem)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![npm](https://img.shields.io/npm/v/mitem.svg)](https://www.npmjs.org/package/mitem)
 
