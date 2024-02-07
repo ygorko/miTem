@@ -3,7 +3,7 @@
 (function () {
   const miTem = {
     name: 'miTem',
-    version: '1.0.8',
+    version: '1.0.9',
   };
 
   const templateSettings = {
@@ -25,27 +25,17 @@
     endif: () => '}',
     endfor: () => '}c=c.loop.parent;',
     for: (...args) => {
-      const code = `if (typeof c.${args[3]}=== 'undefined') return '';
-      var t={loop:{parent:c,length:c.${args[3]}.length}};c=t;var i=0;
-      if(typeof c.loop.parent.${args[3]}.length === 'undefined')
-      {c.loop.length=m.objSize(c.loop.parent.${args[3]})}
-      for(${args[1]} in c.loop.parent.${args[3]}){
-      if (!c.loop.parent.${args[3]}.hasOwnProperty(${args[1]}))continue;
-      c.${args[1]}=c.loop.parent.${args[3]}[${args[1]}];
-      c.loop.last=(i===c.loop.length-1);
-      c.loop.first=(i===0);
-      c.loop.key=${args[1]};
-      c.loop.index0=i; c.loop.index=i+1;i++;`;
+      const code = `if (typeof c.${args[3]}=== 'undefined') return '';const t={loop:{parent:c,length:c.${args[3]}.length}};c=t;var i=0;if(typeof c.loop.parent.${args[3]}.length === 'undefined'){c.loop.length=m.objSize(c.loop.parent.${args[3]})}for(${args[1]} in c.loop.parent.${args[3]}){if (!c.loop.parent.${args[3]}.hasOwnProperty(${args[1]}))continue;c.${args[1]}=c.loop.parent.${args[3]}[${args[1]}];c.loop.last=(i===c.loop.length-1);c.loop.first=(i===0);c.loop.key=${args[1]};c.loop.index0=i; c.loop.index=i+1;i++;`;
 
       return code;
     },
   };
 
-  miTem.variable = function (val) {
+  miTem.var = function (val) {
     this.val = val;
   };
 
-  miTem.variable.prototype.applyFilter = function (filterName, filterParameters) {
+  miTem.var.prototype.applyFilter = function (filterName, filterParameters) {
     let ret;
     if (typeof miTem.filters[filterName] !== 'undefined') {
       ret = miTem.filters[filterName].apply(this.val, filterParameters);
@@ -59,7 +49,7 @@
     return this;
   };
 
-  miTem.variable.prototype.toString = function () {
+  miTem.var.prototype.toString = function () {
     return this.val;
   };
 
@@ -68,13 +58,13 @@
     return keys.length;
   };
 
-  miTem.retoreDefaultSettings = function () {
+  miTem.restoreDefaultSettings = function () {
     miTem.settings = {
       stopOnError: false,
     };
   };
 
-  miTem.retoreDefaultSettings();
+  miTem.restoreDefaultSettings();
 
   miTem.filters = {
     default(value) {
@@ -98,7 +88,7 @@
 
   miTem.processFilters = (expression) => {
     const lexemes = expression.trim().split('|');
-    let variable = `(new m.variable(c.${lexemes[0]}))`;
+    let variable = `(new m.var(c.${lexemes[0]}))`;
     const filters = lexemes.slice(1);
     let filterRegexLexemes;
 
