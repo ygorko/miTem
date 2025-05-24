@@ -1,6 +1,6 @@
 {
   "name": "mitem",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Minimalistic template engine",
   "main": "mitem.js",
   "authors": [

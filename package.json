@@ -1,13 +1,14 @@
 {
   "name": "mitem",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Minimalistic template engine",
   "keywords": [
     "template",
     "minimalistic",
     "fast",
     "small",
-    "templating"
+    "templating",
+    "twiglike"
   ],
   "license": "MIT",
   "devDependencies": {
@@ -24,6 +25,5 @@
     "lint": "eslint ./src/mitem.js"
   },
   "dependencies": {
-    "yarn": "^1.17.3"
   }
 }
