@@ -3,7 +3,7 @@
 (function () {
   const miTem = {
     name: 'miTem',
-    version: '1.0.9',
+    version: '1.0.10',
   };
 
   const templateSettings = {

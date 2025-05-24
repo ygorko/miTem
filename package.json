@@ -1,29 +1,27 @@
 {
   "name": "mitem",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Minimalistic template engine",
   "keywords": [
     "template",
     "minimalistic",
     "fast",
     "small",
-    "templating"
+    "templating",
+    "twiglike"
   ],
   "license": "MIT",
   "devDependencies": {
-    "babel-minify": "^0.5.1",
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.1",
     "eslint-config-airbnb-base": "^13.2.0",
     "eslint-plugin-import": "^2.18.2",
+    "uglify-js": "^3.19.3",
     "jest": "^29.3.1"
   },
   "scripts": {
     "test": "jest",
-    "build": "minify -o ./dist/mitem.min.js ./src/mitem.js",
+    "build": "uglifyjs -m -c -o ./dist/mitem.min.js ./src/mitem.js",
     "lint": "eslint ./src/mitem.js"
-  },
-  "dependencies": {
-    "yarn": "^1.17.3"
   }
 }

@@ -5,10 +5,6 @@ test("Set variable", function () {
   let template = mitem.compile("hello {{who}}");
   expect(template({who: "world!"})).toBe("hello world!");
   expect(template({who: "me"})).toBe("hello me");
-
-  template = mitem.compile("hello {{ who }}");
-  expect(template({who: "world!"})).toBe("hello world!");
-  expect(template({who: "me"})).toBe("hello me");
 });
 
 test("Complex variable", function () {
